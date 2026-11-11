@@ -57,6 +57,21 @@
 
 ---
 
+## 效果截图
+
+截图放在 `docs/screenshots/`，对应上表的几个区域：
+
+| 界面 | 截图文件 | 说明 |
+|---|---|---|
+| 主菜单 | `docs/screenshots/mainmenu.png` | 按钮与 6 条描述均为中文 |
+| 游戏内 HUD | `docs/screenshots/hud.png` | 字幕 / 弹药 / 任务提示 |
+| ESC 暂停菜单 | `docs/screenshots/pausemenu.png` | 5/6 行中文 |
+| PDA | `docs/screenshots/pda.png` | 仍是方块，作为待解决项留档 |
+
+> 截图待补，欢迎 PR。
+
+---
+
 ## 汉化范围
 
 ### 已汉化
