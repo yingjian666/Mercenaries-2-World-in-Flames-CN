@@ -1,0 +1,12 @@
+# 补丁本体（走 Releases，不进 Git）
+data/*.wad
+*.7z
+*.zip
+
+# 截图（可提交，但先忽略临时图）
+docs/screenshots/*.tmp
+
+# 系统
+Thumbs.db
+desktop.ini
+.DS_Store
