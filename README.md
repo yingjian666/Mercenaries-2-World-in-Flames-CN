@@ -8,8 +8,9 @@
 > **A Chinese (Simplified) localization patch for Mercenaries 2: World in Flames (2008, Pandemic Studios / EA), PC version.**
 > 本项目是《雇佣兵 2：战火世界》（Mercenaries 2: World in Flames）的**简体中文汉化补丁**，覆盖界面、菜单、HUD、字幕、任务文本；不含游戏本体。
 
-> **中文名称**：雇佣兵 2：战火世界 / 雇佣兵2
+> **中文名称**：雇佣兵 2：战火世界 / 雇佣兵2 / 雇佣兵2：战火纪元
 > **英文名称**：Mercenaries 2: World in Flames
+> **搜索关键词**：Mercenaries 2: World in Flames 中文汉化补丁、雇佣兵2：战火纪元中文汉化补丁、雇佣兵 2 战火世界汉化
 > **开发**：Pandemic Studios（2008）　**发行**：Electronic Arts
 
 > 这是 2008 年 Pandemic Studios 的开放世界动作游戏，PC 版只有英文。
