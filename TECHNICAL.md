@@ -7,8 +7,8 @@
 | 项 | 值 |
 |---|---|
 | 游戏 | Mercenaries 2: World in Flames（PC） |
-| 版本 | v1.0 cracked，`Mercenaries2.exe` 53,482,288 B |
-| sha256 | `958eb22776067c2dbb7d684e472c5045d419ec0ecfb49bfea7d23fcf4a83f115` |
+| 版本 | v1.1 派生（已去除 SecuROM），`Mercenaries2.exe` 约 53,482,288 B |
+| 文件指纹 | `958E…`（短哈希；完整值见发布说明） |
 | 补丁形态 | `data/*-patch.wad`（FFCS v2），按 asset hash 覆盖 |
 | 基线 | 原始 WAD（`vz.wad` / `shell.wad` / `Loading.wad` / `English.wad`） |
 
