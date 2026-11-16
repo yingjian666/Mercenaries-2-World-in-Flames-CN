@@ -1,122 +1,125 @@
-# 《雇佣兵 2：战火世界》简体中文汉化
+# Mercenaries 2: World in Flames — Simplified Chinese Localization
 
-[English](README.en.md) | **中文**
+**English** | [中文](README.md)
 
-> **项目状态：开发中，补丁尚未发布。**
-> 对话 / 字幕 / 任务 / HUD 已完成中文；菜单与 PDA 界面受字体硬限制仍未通过，所以暂不发布补丁 —— **做完才发，不做半成品**。
-> 本仓库现在公开全部逆向过程与技术记录，同时也作为与社区同步进度的窗口。
+> **Status: in development; no patch released yet.**
+> Dialogue / subtitles / missions / HUD are localized to Chinese. The menu and PDA layers are still blocked by a hard font limitation, so the patch is not published — **it ships when it's finished, not before**.
+> This repo publishes the full reverse-engineering record and doubles as the progress window for the community.
 
-> PC 英文版的汉化补丁（**不含游戏本体**）。游戏内对话、字幕、任务提示、HUD 已中文；**菜单/PDA 类界面因字体硬限制，目前以英文为准**。
+> A localization patch for the **PC English release** (game files not included). In-game dialogue, subtitles, mission text and HUD are Chinese; **menu / PDA UI is English** because of the font limit below.
 
-[![状态](https://img.shields.io/badge/status-v0.6%20beta-yellow.svg)](#一眼看现状)
-[![游戏](https://img.shields.io/badge/game-Mercenaries%202-orange.svg)](https://en.wikipedia.org/wiki/Mercenaries_2:_World_in_Flames)
-[![平台](https://img.shields.io/badge/platform-Windows%20XP%2B-lightgrey.svg)](#兼容性)
+[![status](https://img.shields.io/badge/status-in%20development-yellow.svg)](#) [![game](https://img.shields.io/badge/game-Mercenaries%202-orange.svg)](https://en.wikipedia.org/wiki/Mercenaries_2:_World_in_Flames) [![platform](https://img.shields.io/badge/platform-Windows%20XP%2B-lightgrey.svg)](#compatibility)
 
 ---
 
-## 一眼看现状
+## State of things
 
-| 内容 | 状态 |
+| Area | State |
 |---|---|
-| 游戏内对话、字幕 | ✅ **中文** |
-| 任务提示、HUD（弹药/血量/提示） | ✅ **中文** |
-| 主菜单 6 个按钮 | ✅ 中文（纹理重画） |
-| PDA 顶栏（地图/信息/物资/图例） | ✅ 中文（纹理重画） |
-| 暂停菜单 | ✅ 52 条菜单项中文（拉丁码位 + 图集复用） |
-| **PDA 正文 / 设置 / 弹窗 / 底部状态行** | ⚙️ **已按字体能力回退为英文**（646 条），见下 |
+| In-game dialogue, subtitles | ✅ **Chinese** |
+| Mission text, HUD (ammo / health / prompts) | ✅ **Chinese** |
+| Main menu buttons (6) | ✅ Chinese (textures redrawn) |
+| PDA top bar (map / info / supplies / legend) | ✅ Chinese (textures redrawn) |
+| Pause menu | ✅ 52 menu strings (Latin codepoint borrowing + atlas reuse) |
+| **PDA body / Options / dialogs / status line** | ⚙️ **reverted to English on purpose** (646 strings) |
 
-> 一句话：**能撑住中文的地方（对话、字幕、任务、HUD）都是中文**；剩下那批界面**中文会变成方块，所以主动回退成英文**——这是刻意的取舍，不是没做完。
+> Short version: **everywhere Chinese can actually render, it is Chinese.** The remaining UI would render as tofu, so it was deliberately reverted to English. That is a trade-off, not unfinished work.
 
-## 为什么菜单/PDA 不能全中文（根因已定位）
+## Why the menus can't be fully Chinese (root cause)
 
-游戏里并存**三套字体**，它们的能力完全不同：
+Three font paths coexist, with very different capacities:
 
-| 界面 | 用的字体 | 中文字形 | 结果 |
+| UI surface | Font | CJK glyphs | Result |
 |---|---|---|---|
-| 对话、字幕、HUD | 语言块字体（4,134 字形 + 2048×2048 图集） | 已扩 | ✅ 中文正常 |
-| 暂停菜单、PDA 文本 | `fonts_enext`（486 字形，仅 82 个可牺牲拉丁扩展槽） | 只有 82 个 | ⚠️ 超出即方块 |
-| 设置页、部分菜单 | `SHELL.gfx` 内嵌 `Times New Roman`（114 码位） | 只有 5–6 个 | ❌ 基本无法中文 |
+| Dialogue, subtitles, HUD | language-block font (4,134 glyphs, 2048×2048 atlas) | expanded | ✅ Chinese renders |
+| Pause menu, PDA text | `fonts_enext` (486 glyphs, only **82** spare latin-ext slots) | 82 | ⚠️ tofu beyond that |
+| Options, part of the menus | `SHELL.gfx` embedded `Times New Roman` (114 codepoints) | 5–6 | ❌ effectively impossible |
 
-**方块不是字体损坏，而是「汉字塞进了没有 CJK 字形的字体」**。判定依据：方块个数恒等于汉化后的中文字数（`ON/OFF` 各 1 个方块 = 被译成单字「开/关」；`Status: Offline` → 「状态：离线」；玩家名 4+3 方块 = 「马蒂亚斯·尼尔森」）。
+**Tofu is not a broken font — it is Chinese characters fed to a font with no CJK glyphs.** The proof: the tofu count always equals the character count of the Chinese string (`ON`/`OFF` → 1 box each because they were translated to single characters 开/关; `Status: Offline` → 状态：离线; the player name 4+3 boxes → 马蒂亚斯·尼尔森).
 
-因此要消除方块，只有两条路：**扩字体**（已证明在 `SHELL.gfx` 上会崩）或**把文本退回英文**。本版选择了后者，覆盖 PDA 与设置界面的 646 条文本。
+So there are only two ways out: **grow the font** (crashes on boot in `SHELL.gfx`, see below) or **revert the text to English**. This release takes the second path for 646 PDA/Options strings.
 
-## 已知问题
+## Known issues
 
-- **PDA 正文 / 设置页文字是英文**：中文会方块，故回退（本版刻意如此）；
-- 字距：个别汉字偏挤（引擎按拉丁宽度排版，固有）；
-- 暂停菜单的 52 条中文靠借用拉丁扩展码位实现，若文本里出现 `À Á Â Ý` 这类字符，可能显示成汉字（已知、可接受）；
-- 极少数「文字写成纹理」的按钮（主菜单、PDA 页签）只能靠重画纹理，字体改了不生效。
+- **PDA body / Options text is English** — Chinese renders as tofu, so it was reverted on purpose;
+- Kerning: some Chinese characters are slightly tight (the engine lays out by Latin widths; inherent);
+- The 52 Chinese pause-menu strings use borrowed Latin-extended codepoints, so a literal `À Á Â Ý` in a string may display as a Chinese character (known, acceptable);
+- Text that was baked into textures (main menu buttons, PDA tabs) can only be redrawn, not retargeted.
 
-## 阶段性总结（2026-11）
+## What's done
 
-### 已完成
+- **Full text translation**: 17,651 / 18,299 stringdb entries (96.5%), with a consistent terminology table for people, factions and place names
+- **HUD / subtitles / missions**: language-block font expanded, no missing glyphs observed
+- **Main menu buttons, PDA top bar**: textures redrawn to Chinese
+- **Pause menu**: 52 strings via Latin codepoint + `fonts_enext` atlas reuse
+- **646 PDA/Options strings reverted to English**: located by "English literal → hash" and by contiguous `stringdb` index ranges; tofu eliminated on those surfaces
 
-- **全量文本翻译**：17,651 / 18,299 条（96.5%），含人物、派系、地名术语表
-- **游戏内 HUD / 字幕 / 任务**：语言块字体扩页，实测无缺字
-- **主菜单 6 个按钮、PDA 顶栏**：纹理重画为中文
-- **暂停菜单 52 条**：拉丁码位 + `fonts_enext` 图集复用
-- **PDA/设置界面 646 条回退英文**：按「英文字面 → hash」和「stringdb 顺序区间」批量定位，方块清零（本版新增）
+## Dead ends (all tested, documented so nobody pays twice)
 
-### 踩过的死路（全部实战验证，供后来者省时间）
-
-| # | 方案 | 结果 |
+| # | Approach | Result |
 |---|---|---|
-| 1 | 把图集扩到 2048×2048 | 游戏启动即崩（纹理上传 `0xC0000005`） |
-| 2 | 改 `SHELL.gfx` 内嵌字体（`DefineFont3`） | 崩（对象 vtable 无效） |
-| 3 | 只改图集不改字体（b1c） | 静态校验全通过，运行仍崩 |
-| 4 | 运行时替换字体对象（DLL hook） | 不崩，但渲染不认（时序 `g_font=NULL`） |
-| 5 | 扩 `fonts_enext` 码位表 | 三次尝试均失败（图集尺寸硬限制） |
-| 6 | cjk2（2048 图集 CJK 注入） | 无效，界面仍方块，已回滚 |
-| 7 | 系统字体替换（注册表 `FontSubstitutes`） | 无效——不是 GDI 字体 |
-| 8 | 新语言 WAD + ASI | 编译通过，未跑通 |
-| 9 | 用「码位借用」硬塞全部菜单文本 | 上限 82 槽，只能覆盖 52 条 |
+| 1 | Grow the atlas to 2048×2048 | crashes on boot (texture upload, `0xC0000005`) |
+| 2 | Edit the `SHELL.gfx` embedded font (`DefineFont3`) | crashes (invalid object vtable) |
+| 3 | Edit only the atlas, keep the font (b1c) | static checks all pass, still crashes at runtime |
+| 4 | Replace the font object at runtime (DLL hook) | no crash, but never drawn (`g_font=NULL` timing) |
+| 5 | Extend `fonts_enext`'s codepoint table | failed three times (atlas size hard limit) |
+| 6 | cjk2 (2048 atlas, 3,584 CJK glyphs injected) | no effect, UI still tofu; rolled back |
+| 7 | System font substitution (`FontSubstitutes`) | no effect — not a GDI device font |
+| 8 | New language WAD + ASI | compiles, not brought up end-to-end |
+| 9 | Push all menu text through borrowed codepoints | 82-slot ceiling, covers 52 strings only |
 
-### 下一步（可选，非承诺）
+Crash addresses: atlas growth `0x874640`, movie font edit `0x6D057C`.
 
-- 外挂式实时文本替换（不改游戏文件）；
-- 或维持现状：对话/字幕/HUD 中文 + 界面英文。
+## Structure of the record
 
-## 安装
+| File | Contents |
+|---|---|
+| [`docs/reverse-notes/汉化完全指南.en.md`](docs/reverse-notes/汉化完全指南.en.md) | **English guide** — all 44 section titles mapped, plus the engineering conclusions that matter |
+| [`docs/reverse-notes/汉化完全指南.md`](docs/reverse-notes/汉化完全指南.md) | Full reverse-engineering record, 54 sections, ~126 KB (Chinese) |
+| [`TECHNICAL.md`](TECHNICAL.md) | Condensed technical writeup: WAD/FFCS v2, stringdb, three font formats, GFx chain, failure table |
+| [`CHANGELOG.md`](CHANGELOG.md) | Version history |
 
-> **补丁目前还没发布**（原因见顶部状态）。以下步骤说明本项目的补丁形态，供复现研究使用。
+The long document is Chinese-only by design (it is the author's working notebook); the parts that matter to other researchers are summarized in `TECHNICAL.md` and in this README. Ask and I'll translate any specific section.
 
-1. **备份**游戏的 `data` 目录（重要）；
-2. 把本仓库的 `shell-patch.wad`、`vz-patch.wad`、`loading-patch.wad`、`English-patch.wad` 复制进游戏 `data` 目录；
-3. 启动游戏。
+## Install (once released)
 
-**卸载**：把这几个 `*-patch.wad` 删掉即可（原版 WAD 从未被修改）。
+> The patch is not released yet. The steps describe the intended shape of the patch.
 
-> 补丁本体约 17 MB，不放进 Git；完成后走 **Releases** 发布。
+1. **Back up** your game's `data` folder;
+2. Copy `shell-patch.wad`, `vz-patch.wad`, `loading-patch.wad`, `English-patch.wad` into `data`;
+3. Launch the game.
 
-## 兼容性
+**Uninstall**: delete those `*-patch.wad` files. The retail WADs are never modified.
 
-- 目标版本：**Mercenaries 2 PC v1.1**（已去除 SecuROM 的可运行版本），`Mercenaries2.exe` 约 53,482,288 字节
-  （文件指纹：`958E…`，完整哈希见发布说明）
-- 补丁形态：`data/*-patch.wad`，按 **asset hash** 覆盖，**不改原版 WAD**
-- 本补丁不含破解，请自备可运行的游戏版本
+> The patch is ~17 MB and is not committed to Git; it will ship via **Releases**.
 
-## 仓库结构
+## Compatibility
+
+- Target: **Mercenaries 2 PC v1.1** (DRM-free build), `Mercenaries2.exe` ≈ 53,482,288 bytes (sha256 `958eb227…`)
+- Patch format: `data/*-patch.wad`, overriding by **asset hash** — retail WADs untouched
+- No DRM circumvention is included; bring your own working copy
+
+## Repo layout
 
 ```
-README.md                  本文件
-CHANGELOG.md               版本记录
-TECHNICAL.md               格式与工具（开发者向）
-LICENSE                    许可
-docs/reverse-notes/        完整逆向记录（汉化完全指南）
-docs/screenshots/          截图（待补）
-release-notes/             发布说明
-tools/                     构建/推送脚本
-data/                      补丁放置处（*.wad 不进 Git，走 Releases）
+README.md / README.en.md   Chinese / English readme
+CHANGELOG.md               version history
+TECHNICAL.md               formats and tooling (developer-facing, English)
+docs/reverse-notes/        full reverse-engineering record (Chinese)
+release-notes/             release notes
+tools/                     build / push helpers
+data/                      patch drop-off (*.wad not in Git)
 ```
 
-## 致谢
+## Credits
 
-- [notes-on-the-released-game](https://github.com/Mercenaries-Fan-Build/notes-on-the-released-game)（格式文档、逆向语料）
-- [mercs2-wad-simulator](https://github.com/Mercenaries-Fan-Build/mercs2-wad-simulator)（WAD 写入器）
-- [mercs2-languages](https://github.com/Mercenaries-Fan-Build/mercs2-languages)（语言 ASI）
-- [mercs2-securom-bypass](https://github.com/Mercenaries-Fan-Build/mercs2-securom-bypass)（去 SecuROM）
+- [notes-on-the-released-game](https://github.com/Mercenaries-Fan-Build/notes-on-the-released-game) — format docs, reverse-engineering corpus
+- [mercs2-wad-simulator](https://github.com/Mercenaries-Fan-Build/mercs2-wad-simulator) — WAD writer
+- [mercs2-languages](https://github.com/Mercenaries-Fan-Build/mercs2-languages) — language ASI / Route C
+- [mercs2-securom-bypass](https://github.com/Mercenaries-Fan-Build/mercs2-securom-bypass) — DRM removal
 
-## 许可
+The `mercs2-wad-simulator` / `mercs2-languages` toolchain is what made this work possible: `qm`, `wad_builder`, `stringdb_dump` and the `add_language` contract are the basis for the PDA/Options analysis above.
 
-见 [LICENSE](LICENSE)。游戏版权归 Pandemic Studios / EA 所有；本补丁仅包含文本与资源改写，**不含游戏本体**。
+## License
+
+See [LICENSE](LICENSE). Game copyright remains with Pandemic Studios / EA; this project only contains text and resource rewrites and **no game content**.
