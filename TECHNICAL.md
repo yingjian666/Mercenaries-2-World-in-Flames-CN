@@ -90,7 +90,7 @@
 | `fonts_ru`（index 8） | ❌ 不控制菜单 |
 | block 18 `Times New Roman` | ❌ 改就崩 `0x6D057C` |
 
-## 3. 字体（三套完全不同的格式）
+## 3. 字体（四套，格式各不相同）
 
 ### 3.1 `english_20` / `english_18` — UCFX(INFO/CHAR/MTRL)
 
