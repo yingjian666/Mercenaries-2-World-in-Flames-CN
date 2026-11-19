@@ -3,12 +3,10 @@
 **English** | [中文](README.md)
 
 > **Status: in development; no patch released yet.**
-> Dialogue / subtitles / missions / HUD are localized to Chinese. The menu and PDA layers are still blocked by a hard font limitation, so the patch is not published — **it ships when it's finished, not before**.
+> A localization patch for the **PC English release** (game files not included). Dialogue / subtitles / missions / HUD are Chinese; **the menu and PDA layers are still blocked by a hard font limitation**, so the patch is not published — **it ships when it's finished, not before**.
 > This repo publishes the full reverse-engineering record and doubles as the progress window for the community.
 
-> A localization patch for the **PC English release** (game files not included). In-game dialogue, subtitles, mission text and HUD are Chinese; **menu / PDA UI is English** because of the font limit below.
-
-[![status](https://img.shields.io/badge/status-in%20development-yellow.svg)](#) [![game](https://img.shields.io/badge/game-Mercenaries%202-orange.svg)](https://en.wikipedia.org/wiki/Mercenaries_2:_World_in_Flames) [![platform](https://img.shields.io/badge/platform-Windows%20XP%2B-lightgrey.svg)](#compatibility)
+[![status](https://img.shields.io/badge/status-v0.6.3-yellow.svg)](#) [![game](https://img.shields.io/badge/game-Mercenaries%202-orange.svg)](https://en.wikipedia.org/wiki/Mercenaries_2:_World_in_Flames) [![platform](https://img.shields.io/badge/platform-Windows%20XP%2B-lightgrey.svg)](#compatibility)
 
 ---
 
@@ -65,10 +63,22 @@ So there are only two ways out: **grow the font** (crashes on boot in `SHELL.gfx
 | 5 | Extend `fonts_enext`'s codepoint table | failed three times (atlas size hard limit) |
 | 6 | cjk2 (2048 atlas, 3,584 CJK glyphs injected) | no effect, UI still tofu; rolled back |
 | 7 | System font substitution (`FontSubstitutes`) | no effect — not a GDI device font |
-| 8 | New language WAD + ASI | compiles, not brought up end-to-end |
+| 8 | New language WAD + ASI (Route C) | ✅ **works** — `qm` build + ASI mount + stringdb resolves (guide §55–56) |
 | 9 | Push all menu text through borrowed codepoints | 82-slot ceiling, covers 52 strings only |
+| 10 | Reuse index 8 so menus use `fonts_ru` (691 glyphs / 512×512) | ❌ **doesn't control menus** — they still use `fonts_enext` (guide §56) |
 
 Crash addresses: atlas growth `0x874640`, movie font edit `0x6D057C`.
+
+## Demand vs supply (the final accounting)
+
+| Item | Count |
+|---|---|
+| Chinese stringdb entries | 16,862 |
+| Distinct Chinese characters | 2,235 |
+| Distinct characters used by short strings (menu/PDA class) | **1,537** |
+| Sacrificeable `fonts_enext` slots (the only font the menus use) | **82** |
+
+**Full menu/PDA Chinese needs 1,537 slots; 82 are available — a 19× gap.** That is not a technique problem but an order-of-magnitude one, so "full menu Chinese via WAD edits" is physically impossible.
 
 ## Structure of the record
 
